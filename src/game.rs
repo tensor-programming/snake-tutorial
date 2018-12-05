@@ -7,16 +7,19 @@ use snake::{Direction, Snake};
 use draw::{draw_block, draw_rectangle};
 
 const FOOD_COLOR: Color = [0.80, 0.00, 0.00, 1.0];
+const FLASHING_COLOR: Color = [0.90, 0.90, 0.90, 1.0];
 const BORDER_COLOR: Color = [0.00, 0.00, 0.00, 1.0];
 const GAMEOVER_COLOR: Color = [0.90, 0.00, 0.00, 0.5];
 
 const MOVING_PERIOD: f64 = 0.1;
+const FLASHING_PERIOD: f64 = 0.2;
 const RESTART_TIME: f64 = 1.0;
 
 pub struct Game {
     snake: Snake,
 
     food_exists: bool,
+    food_flashing: bool,
     food_x: i32,
     food_y: i32,
 
@@ -25,6 +28,7 @@ pub struct Game {
 
     game_over: bool,
     waiting_time: f64,
+    flashing_time: f64,
 }
 
 impl Game {
@@ -32,7 +36,9 @@ impl Game {
         Game {
             snake: Snake::new(2, 2),
             waiting_time: 0.0,
+            flashing_time: 0.0,
             food_exists: true,
+            food_flashing: false,
             food_x: 6,
             food_y: 4,
             width,
@@ -65,7 +71,10 @@ impl Game {
         self.snake.draw(con, g);
 
         if self.food_exists {
-            draw_block(FOOD_COLOR, self.food_x, self.food_y, con, g);
+            match self.food_flashing {
+                true => draw_block(FOOD_COLOR, self.food_x, self.food_y, con, g),
+                false => draw_block(FLASHING_COLOR, self.food_x, self.food_y, con, g),
+            };
         }
 
         draw_rectangle(BORDER_COLOR, 0, 0, self.width, 1, con, g);
@@ -80,6 +89,7 @@ impl Game {
 
     pub fn update(&mut self, delta_time: f64) {
         self.waiting_time += delta_time;
+        self.flashing_time += delta_time;
 
         if self.game_over {
             if self.waiting_time > RESTART_TIME {
@@ -94,6 +104,10 @@ impl Game {
 
         if self.waiting_time > MOVING_PERIOD {
             self.update_snake(None);
+        }
+
+        if self.flashing_time > FLASHING_PERIOD {
+            self.update_food();
         }
     }
 
@@ -130,6 +144,11 @@ impl Game {
         self.food_exists = true;
     }
 
+    fn update_food(&mut self) {
+        self.food_flashing = !self.food_flashing;
+        self.flashing_time = 0.0;
+    }
+
     fn update_snake(&mut self, dir: Option<Direction>) {
         if self.check_if_snake_alive(dir) {
             self.snake.move_forward(dir);
@@ -143,7 +162,9 @@ impl Game {
     fn restart(&mut self) {
         self.snake = Snake::new(2, 2);
         self.waiting_time = 0.0;
+        self.flashing_time = 0.0;
         self.food_exists = true;
+        self.food_flashing = false;
         self.food_x = 6;
         self.food_y = 4;
         self.game_over = false;
