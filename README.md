@@ -2,7 +2,7 @@
 
 _Snake clone done in Rust_
 
-![Sample Game](https://i.imgur.com/ObGkhfH.gif)
+![Sample Game](https://i.imgur.com/YNQqj31.gif)
 
 Forked from [Tensor Programming's
 snake-tutorial](https://github.com/tensor-programming/snake-tutorial)
@@ -34,8 +34,9 @@ things. I'll be recording progress on this below.
 ## Progress
 
 - [X] Add flashing fruit
-- [ ] Add score counter
-- [ ] Add header bar with score
+- [X] Add score counter
+- [X] Add ~header~ footer bar with score
+- [ ] Make game size dynamically modifiable
 - [ ] Make fruit dissapear over time
 - [ ] Add eating sound effect
 - [ ] Add home screen

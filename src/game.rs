@@ -4,11 +4,14 @@ use piston_window::types::Color;
 use rand::{thread_rng, Rng};
 
 use snake::{Direction, Snake};
-use draw::{draw_block, draw_rectangle};
+use draw::{draw_block, draw_rectangle, draw_number};
+
+const FOOTER_HEIGHT: i32 = 6;
 
 const FOOD_COLOR: Color = [0.80, 0.00, 0.00, 1.0];
 const FLASHING_COLOR: Color = [0.90, 0.90, 0.90, 1.0];
 const BORDER_COLOR: Color = [0.00, 0.00, 0.00, 1.0];
+const SCORE_COLOR: Color = [0.80, 0.80, 0.80, 1.0];
 const GAMEOVER_COLOR: Color = [0.90, 0.00, 0.00, 0.5];
 
 const MOVING_PERIOD: f64 = 0.1;
@@ -23,6 +26,8 @@ pub struct Game {
     food_x: i32,
     food_y: i32,
 
+    score: u32,
+
     width: i32,
     height: i32,
 
@@ -33,6 +38,7 @@ pub struct Game {
 
 impl Game {
     pub fn new(width: i32, height: i32) -> Game {
+        let field_height = height - FOOTER_HEIGHT;
         Game {
             snake: Snake::new(2, 2),
             waiting_time: 0.0,
@@ -41,9 +47,10 @@ impl Game {
             food_flashing: false,
             food_x: 6,
             food_y: 4,
+            score: 0,
             width,
-            height,
-            game_over: false
+            height: field_height,
+            game_over: false,
         }
     }
 
@@ -82,6 +89,11 @@ impl Game {
         draw_rectangle(BORDER_COLOR, 0, 0, 1, self.height, con, g);
         draw_rectangle(BORDER_COLOR, self.width - 1, 0, 1, self.height, con, g);
 
+        draw_rectangle(BORDER_COLOR, 0, self.height, self.width, FOOTER_HEIGHT, con, g);
+
+        let (score_x, score_y) = (self.width - 2, self.height + 1);
+        draw_number(SCORE_COLOR, self.score, score_x, score_y, con, g);
+
         if self.game_over {
             draw_rectangle(GAMEOVER_COLOR, 0, 0, self.width, self.height, con, g);
         }
@@ -114,6 +126,7 @@ impl Game {
     fn check_eating(&mut self) {
         let (head_x, head_y): (i32, i32) = self.snake.head_position();
         if self.food_exists && self.food_x == head_x && self.food_y == head_y {
+            self.score += 1;
             self.food_exists = false;
             self.snake.restore_tail();
         }
@@ -167,6 +180,7 @@ impl Game {
         self.food_flashing = false;
         self.food_x = 6;
         self.food_y = 4;
+        self.score = 0;
         self.game_over = false;
     }
 }
