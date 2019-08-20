@@ -8,8 +8,8 @@ mod game;
 use piston_window::*;
 use piston_window::types::Color;
 
-use game::Game;
-use draw::to_coord_u32;
+use crate::game::Game;
+use crate::draw::to_coord_u32;
 
 const BACK_COLOR: Color = [0.5, 0.5, 0.5, 1.0];
 
@@ -29,7 +29,7 @@ fn main() {
         if let Some(Button::Keyboard(key)) = event.press_args() {
             game.key_pressed(key);
         }
-        window.draw_2d(&event, |c, g| {
+        window.draw_2d(&event, |c, g, _| {
             clear(BACK_COLOR, g);
             game.draw(&c, g);
         });
