@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["tensor-programming <abeltensor@tensor-programming.com>"]
 
 [dependencies]
-rand = "0.7"
-piston_window = "0.103.0"
+rand = "0.8"
+piston_window = "0.117.0"

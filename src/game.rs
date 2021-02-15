@@ -1,10 +1,10 @@
-use piston_window::*;
 use piston_window::types::Color;
+use piston_window::*;
 
 use rand::{thread_rng, Rng};
 
-use crate::snake::{Direction, Snake};
 use crate::draw::{draw_block, draw_rectangle};
+use crate::snake::{Direction, Snake};
 
 const FOOD_COLOR: Color = [0.80, 0.00, 0.00, 1.0];
 const BORDER_COLOR: Color = [0.00, 0.00, 0.00, 1.0];
@@ -37,7 +37,7 @@ impl Game {
             food_y: 4,
             width,
             height,
-            game_over: false
+            game_over: false,
         }
     }
 
@@ -51,11 +51,13 @@ impl Game {
             Key::Down => Some(Direction::Down),
             Key::Left => Some(Direction::Left),
             Key::Right => Some(Direction::Right),
-            _ => Some(self.snake.head_direction())
+            _ => Some(self.snake.head_direction()),
         };
 
-        if dir.unwrap() == self.snake.head_direction().opposite() {
-            return;
+        if let Some(dir) = dir {
+            if dir == self.snake.head_direction().opposite() {
+                return;
+            }
         }
 
         self.update_snake(dir);
@@ -118,11 +120,11 @@ impl Game {
     fn add_food(&mut self) {
         let mut rng = thread_rng();
 
-        let mut new_x = rng.gen_range(1, self.width - 1);
-        let mut new_y = rng.gen_range(1, self.height - 1);
+        let mut new_x = rng.gen_range(1..self.width - 1);
+        let mut new_y = rng.gen_range(1..self.height - 1);
         while self.snake.overlap_tail(new_x, new_y) {
-            new_x = rng.gen_range(1, self.width - 1);
-            new_y = rng.gen_range(1, self.height - 1);
+            new_x = rng.gen_range(1..self.width - 1);
+            new_y = rng.gen_range(1..self.height - 1);
         }
 
         self.food_x = new_x;
